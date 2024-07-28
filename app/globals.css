@@ -21,6 +21,22 @@ h6.ce-header{
   @apply text-base font-semibold
 }
 
+.data-radix-popper-content-wrapper{
+  --lb-z-index: 50;
+}
+/* Styles all default components */
+.lb-root {
+  --lb-accent: purple;
+  --lb-spacing: 1em;
+  --lb-radius: 0;
+  --lb-z-index:10
+}
+
+.ce-block__content,
+    .ce-toolbar__content {
+        max-width: 70%;
+    }
+
 @layer base {
   :root {
     --background: 0 0% 100%;

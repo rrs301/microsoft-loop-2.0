@@ -15,6 +15,7 @@ import { doc, onSnapshot, updateDoc } from 'firebase/firestore';
 import { db } from '@/config/firebaseConfig';
 import { useUser } from '@clerk/nextjs';
 import Paragraph from '@editorjs/paragraph';
+import GenerateAITemplate from './GenerateAITemplate';
 
 
 function RichDocumentEditor({ params }) {
@@ -23,15 +24,11 @@ function RichDocumentEditor({ params }) {
   let editor;
   const { user } = useUser();
   const [documentOutput, setDocumentOutput] = useState([]);
-  let isFetched = false;
+  // const [isFetched,setIsFetched]=useState(false);
+  let isFetched=false
   useEffect(() => {
     user && InitEditor();
   }, [user])
-
-  // useEffect(() => {
-  //   params && GetDocumentOutput();
-  // }, [params])
-
 
   /**
    * Used to save Document
@@ -40,9 +37,9 @@ function RichDocumentEditor({ params }) {
     console.log("UPDATE")
     ref.current.save().then(async (outputData) => {
       const docRef = doc(db, 'documentOutput', params?.documentid);
-      console.log(outputData)
+     
       await updateDoc(docRef, {
-        output: outputData,
+        output: JSON.stringify(outputData),
         editedBy: user?.primaryEmailAddress?.emailAddress
       })
     })
@@ -51,10 +48,9 @@ function RichDocumentEditor({ params }) {
   const GetDocumentOutput = () => {
     const unsubscribe = onSnapshot(doc(db, 'documentOutput', params?.documentid),
       (doc) => {
-        console.log(doc.data()?.output)
-        if (isFetched == false || doc.data()?.editedBy != user?.primaryEmailAddress?.emailAddress)
-          doc.data()?.editedBy && editor?.render(doc.data()?.output);
-        isFetched = true;
+        if (doc.data()?.editedBy != user?.primaryEmailAddress?.emailAddress||isFetched==false)
+          doc.data().editedBy&&editor?.render(JSON.parse(doc.data()?.output)); 
+        isFetched=true  
       })
   }
 
@@ -115,8 +111,11 @@ function RichDocumentEditor({ params }) {
     }
   }
   return (
-    <div className='lg:-ml-80'>
-      <div id='editorjs'></div>
+    <div className=' '>
+      <div id='editorjs' className='w-[70%]'></div>
+      <div className='fixed bottom-10 md:ml-80 left-0 z-10'>
+        <GenerateAITemplate setGenerateAIOutput={(output)=>editor?.render(output)} />
+      </div>
     </div>
   )
 }
