@@ -1,9 +1,7 @@
-import { db } from '@/config/firebaseConfig'
-import { collection, getDocs, query, where } from 'firebase/firestore'
+"use client"
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
 import React from 'react'
-import { toast } from 'sonner'
 
 function WorkspaceItemList({workspaceList}) {
 
